@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 
 export const shoppingCartContext = createContext();
 
@@ -22,6 +22,52 @@ export const ShoppingCartProvider = ({ children }) => {
     // Product detail - Show product
     const [productToShow, setProductToShow] = useState({});
 
+    // Shopping Cart - Order
+    const [order, setOrder] = useState([]);
+
+    // Get products
+    const [items, setItems] = useState(null);
+    const [filteredItems, setFilteredItems] = useState(null);
+
+    // Get products by title in search
+    const [searchByTitle, setSearchByTitle] = useState('');
+
+    // Get products by category in search
+    const [searchByCategory, setSearchByCategory] = useState(null);
+
+
+
+    useEffect(() => {
+        fetch('https://api.escuelajs.co/api/v1/products')
+            .then(res => res.json())
+            .then(data => setItems(data));
+    }, []);
+
+    const filteredItemsByTitle = (items, searchByTitle) => {
+        return items?.filter(item => item.title.toLowerCase().includes(searchByTitle.toLowerCase()))
+    }
+
+    const filteredItemsByCategory = (items, searchByCategory) => {
+        return items?.filter(item => item.category.name.toLowerCase().includes(searchByCategory.toLowerCase()))
+    }
+
+
+    useEffect(() => {
+
+        if (searchByTitle && searchByCategory) {
+            const itemsCategory = filteredItemsByCategory(items, searchByCategory);
+            setFilteredItems(filteredItemsByTitle(itemsCategory, searchByTitle));
+        } else {
+            if (searchByTitle && !searchByCategory) {
+                setFilteredItems(filteredItemsByTitle(items, searchByTitle))
+            }
+            if (searchByCategory && !searchByTitle) {
+                setFilteredItems(filteredItemsByCategory(items, searchByCategory))
+            }
+        }
+    }, [items, searchByTitle, searchByCategory]);
+
+
     return (
         <shoppingCartContext.Provider value={{
             count,
@@ -35,7 +81,16 @@ export const ShoppingCartProvider = ({ children }) => {
             setCartProducts,
             isCheckOutSideMenuOpen,
             openCheckOutSideMenu,
-            closeCheckOutSideMenu
+            closeCheckOutSideMenu,
+            order,
+            setOrder,
+            items,
+            setItems,
+            searchByTitle,
+            setSearchByTitle,
+            filteredItems,
+            searchByCategory,
+            setSearchByCategory
         }}>
             {children}
         </shoppingCartContext.Provider>
