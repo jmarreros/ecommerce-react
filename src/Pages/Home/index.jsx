@@ -26,6 +26,7 @@ function Home() {
             <input
                 type="text"
                 placeholder='Search a product ...'
+                value={context.searchByTitle}
                 className='border border-black w-80 p-4 mb-6 mt-4 focus:outline-none text-black rounded-lg'
                 onChange={(event) => context.setSearchByTitle(event.target.value)}
             />

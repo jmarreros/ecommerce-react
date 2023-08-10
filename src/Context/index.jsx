@@ -60,11 +60,14 @@ export const ShoppingCartProvider = ({ children }) => {
         } else {
             if (searchByTitle && !searchByCategory) {
                 setFilteredItems(filteredItemsByTitle(items, searchByTitle))
-            }
-            if (searchByCategory && !searchByTitle) {
+            } else if (searchByCategory && !searchByTitle) {
                 setFilteredItems(filteredItemsByCategory(items, searchByCategory))
+            } else {
+                setFilteredItems(items);
             }
         }
+
+
     }, [items, searchByTitle, searchByCategory]);
 
 
